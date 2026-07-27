@@ -1,0 +1,22 @@
+# Local secrets
+.env
+.env.*
+!.env.example
+
+# Vendored Claude Code packages and extracted binaries
+vendor/
+
+# Python cache and test artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+# OS/editor files
+.DS_Store
+.idea/
+.vscode/
+
+# Runtime logs
+*.log

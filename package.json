@@ -1,0 +1,24 @@
+{
+  "name": "claude-code-ark-adapter",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Run Claude Code through a local Anthropic Messages API proxy backed by Volcengine Ark.",
+  "scripts": {
+    "install:claude": "bash scripts/install_claude_code.sh",
+    "proxy": "python3 proxy/anthropic_ark_proxy.py",
+    "test": "python3 -m unittest discover -s tests -p 'test_*.py'",
+    "test:seed": "bash scripts/test_seed_models.sh",
+    "poc:runtime": "bash runtime/run_seed_evolving_messages_api.sh",
+    "poc:runtime:proxy": "bash runtime/run_seed_evolving_headless.sh",
+    "poc:agent-sdk": "python3 agent-sdk/seed_evolving_agent.py",
+    "poc:product-shell": "python3 product-shell/server.py",
+    "poc:context-api": "python3 context-api/context_api_client.py"
+  },
+  "claudeCode": {
+    "version": "2.1.216",
+    "platform": "darwin-arm64",
+    "wrapperTarball": "vendor/claude-code-2.1.216.tgz",
+    "nativeTarball": "vendor/claude-code-darwin-arm64-2.1.216.tgz",
+    "nativeBinary": "vendor/native/darwin-arm64/package/claude"
+  }
+}
