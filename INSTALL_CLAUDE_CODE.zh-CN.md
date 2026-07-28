@@ -115,7 +115,7 @@ export ANTHROPIC_BASE_URL="https://ark.cn-beijing.volces.com/api/compatible"
 export ANTHROPIC_API_KEY="$ARK_API_KEY"
 export ANTHROPIC_AUTH_TOKEN="$ANTHROPIC_API_KEY"
 
-export ANTHROPIC_MODEL="<your-ark-endpoint-id>"
+export ANTHROPIC_MODEL="<your-seed-evolving-endpoint-id>"
 export ANTHROPIC_SMALL_FAST_MODEL="$ANTHROPIC_MODEL"
 export ANTHROPIC_DEFAULT_HAIKU_MODEL="$ANTHROPIC_MODEL"
 export ANTHROPIC_DEFAULT_SONNET_MODEL="$ANTHROPIC_MODEL"

@@ -39,7 +39,7 @@ Claude Code 原生按 Anthropic Messages API 语义工作。本仓库将 Claude 
 ```text
 Claude Code
   -> https://ark.cn-beijing.volces.com/api/compatible/v1/messages
-  -> Ark endpoint <your-ark-endpoint-id>
+  -> Ark endpoint <your-seed-evolving-endpoint-id>
   -> Seed Evolving
 ```
 
@@ -50,7 +50,7 @@ export ARK_API_KEY="your-ark-api-key"
 export ANTHROPIC_BASE_URL="https://ark.cn-beijing.volces.com/api/compatible"
 export ANTHROPIC_API_KEY="$ARK_API_KEY"
 export ANTHROPIC_AUTH_TOKEN="$ANTHROPIC_API_KEY"
-export ANTHROPIC_MODEL="<your-ark-endpoint-id>"
+export ANTHROPIC_MODEL="<your-seed-evolving-endpoint-id>"
 export ANTHROPIC_SMALL_FAST_MODEL="$ANTHROPIC_MODEL"
 export ANTHROPIC_DEFAULT_HAIKU_MODEL="$ANTHROPIC_MODEL"
 export ANTHROPIC_DEFAULT_SONNET_MODEL="$ANTHROPIC_MODEL"
@@ -70,8 +70,8 @@ bash scripts/test_seed_models.sh
 
 默认 endpoint：
 
-- `SEED_21_PRO_MODEL=<your-ark-endpoint-id>`
-- `SEED_21_EVOLVING_MODEL=<your-ark-endpoint-id>`
+- `SEED_21_PRO_MODEL=<your-seed-pro-endpoint-id>`
+- `SEED_21_EVOLVING_MODEL=<your-seed-evolving-endpoint-id>`
 
 如需替换成自己的方舟 endpoint：
 
@@ -186,7 +186,7 @@ Claude Code natively follows the Anthropic Messages API contract. This repositor
 ```text
 Claude Code
   -> https://ark.cn-beijing.volces.com/api/compatible/v1/messages
-  -> Ark endpoint <your-ark-endpoint-id>
+  -> Ark endpoint <your-seed-evolving-endpoint-id>
   -> Seed Evolving
 ```
 
@@ -197,7 +197,7 @@ export ARK_API_KEY="your-ark-api-key"
 export ANTHROPIC_BASE_URL="https://ark.cn-beijing.volces.com/api/compatible"
 export ANTHROPIC_API_KEY="$ARK_API_KEY"
 export ANTHROPIC_AUTH_TOKEN="$ANTHROPIC_API_KEY"
-export ANTHROPIC_MODEL="<your-ark-endpoint-id>"
+export ANTHROPIC_MODEL="<your-seed-evolving-endpoint-id>"
 export ANTHROPIC_SMALL_FAST_MODEL="$ANTHROPIC_MODEL"
 export ANTHROPIC_DEFAULT_HAIKU_MODEL="$ANTHROPIC_MODEL"
 export ANTHROPIC_DEFAULT_SONNET_MODEL="$ANTHROPIC_MODEL"
@@ -217,8 +217,8 @@ bash scripts/test_seed_models.sh
 
 Default endpoints:
 
-- `SEED_21_PRO_MODEL=<your-ark-endpoint-id>`
-- `SEED_21_EVOLVING_MODEL=<your-ark-endpoint-id>`
+- `SEED_21_PRO_MODEL=<your-seed-pro-endpoint-id>`
+- `SEED_21_EVOLVING_MODEL=<your-seed-evolving-endpoint-id>`
 
 Override the endpoints if your Ark account uses different endpoint IDs:
 

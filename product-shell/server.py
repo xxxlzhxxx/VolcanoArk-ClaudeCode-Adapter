@@ -16,7 +16,6 @@ from typing import Any
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 AGENT_SCRIPT = ROOT_DIR / "agent-sdk" / "seed_evolving_agent.py"
-SEED_EVOLVING_MODEL = "<your-ark-endpoint-id>"
 
 
 class ProductShellHandler(BaseHTTPRequestHandler):
@@ -30,7 +29,7 @@ class ProductShellHandler(BaseHTTPRequestHandler):
             {
                 "ok": True,
                 "shell": "seed-evolving-product-shell",
-                "model": os.environ.get("ARK_MODEL", SEED_EVOLVING_MODEL),
+                "model": os.environ.get("ANTHROPIC_MODEL") or os.environ.get("ARK_MODEL") or "unset",
             }
         )
 
@@ -77,7 +76,6 @@ class ProductShellHandler(BaseHTTPRequestHandler):
 
 def run_agent(prompt: str) -> dict[str, Any]:
     env = os.environ.copy()
-    env.setdefault("ARK_MODEL", SEED_EVOLVING_MODEL)
     cmd = ["python3", str(AGENT_SCRIPT), prompt]
     completed = subprocess.run(
         cmd,

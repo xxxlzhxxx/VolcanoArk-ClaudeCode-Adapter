@@ -14,13 +14,12 @@ from typing import Any
 ROOT_DIR = Path(__file__).resolve().parents[1]
 CLAUDE_BIN = ROOT_DIR / "vendor" / "native" / "darwin-arm64" / "package" / "claude"
 ARK_MESSAGES_BASE_URL = "https://ark.cn-beijing.volces.com/api/compatible"
-SEED_EVOLVING_MODEL = "<your-ark-endpoint-id>"
 
 
 class SeedEvolvingAgent:
     """Small adapter around Claude Code headless execution."""
 
-    def __init__(self, model: str = SEED_EVOLVING_MODEL, cwd: Path | None = None) -> None:
+    def __init__(self, model: str | None = None, cwd: Path | None = None) -> None:
         self.model = model
         self.cwd = cwd or ROOT_DIR
 
@@ -34,28 +33,36 @@ class SeedEvolvingAgent:
                 "error": "Missing ARK_API_KEY or VOLCENGINE_API_KEY.",
             }
 
+        model = self.model or env.get("ANTHROPIC_MODEL") or env.get("ARK_MODEL") or env.get("SEED_21_EVOLVING_MODEL")
+        if not model:
+            return {
+                "ok": False,
+                "model": None,
+                "error": "Missing ANTHROPIC_MODEL, ARK_MODEL, or SEED_21_EVOLVING_MODEL.",
+            }
+
         claude_bin = Path(env.get("CLAUDE_BIN", CLAUDE_BIN))
         if not claude_bin.exists():
             return {
                 "ok": False,
-                "model": self.model,
+                "model": model,
                 "error": f"Claude binary does not exist: {claude_bin}",
             }
         if not os.access(claude_bin, os.X_OK):
             return {
                 "ok": False,
-                "model": self.model,
+                "model": model,
                 "error": f"Claude binary is not executable: {claude_bin}",
             }
 
         env.setdefault("ANTHROPIC_BASE_URL", ARK_MESSAGES_BASE_URL)
         env.setdefault("ANTHROPIC_API_KEY", api_key)
         env.setdefault("ANTHROPIC_AUTH_TOKEN", env["ANTHROPIC_API_KEY"])
-        env["ANTHROPIC_MODEL"] = self.model
-        env["ANTHROPIC_SMALL_FAST_MODEL"] = self.model
-        env["ANTHROPIC_DEFAULT_HAIKU_MODEL"] = self.model
-        env["ANTHROPIC_DEFAULT_SONNET_MODEL"] = self.model
-        env["ANTHROPIC_DEFAULT_OPUS_MODEL"] = self.model
+        env["ANTHROPIC_MODEL"] = model
+        env["ANTHROPIC_SMALL_FAST_MODEL"] = model
+        env["ANTHROPIC_DEFAULT_HAIKU_MODEL"] = model
+        env["ANTHROPIC_DEFAULT_SONNET_MODEL"] = model
+        env["ANTHROPIC_DEFAULT_OPUS_MODEL"] = model
         env.setdefault("CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC", "1")
 
         cmd = [
@@ -78,7 +85,7 @@ class SeedEvolvingAgent:
         if completed.returncode != 0:
             return {
                 "ok": False,
-                "model": self.model,
+                "model": model,
                 "exit_code": completed.returncode,
                 "stdout": completed.stdout,
                 "stderr": completed.stderr,
@@ -91,7 +98,7 @@ class SeedEvolvingAgent:
 
         return {
             "ok": True,
-            "model": self.model,
+            "model": model,
             "raw": raw,
             "stderr": completed.stderr,
         }

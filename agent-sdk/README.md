@@ -10,7 +10,7 @@ This PoC wraps Claude Code headless execution as a programmable agent interface.
 
 ## Model
 
-- Default Ark endpoint: `<your-ark-endpoint-id>`
+- Default Ark endpoint: `<your-seed-evolving-endpoint-id>`
 - Secret handling: read `ARK_API_KEY` or `VOLCENGINE_API_KEY` from the shell environment.
 
 ## Run
@@ -28,7 +28,7 @@ python3 agent-sdk/seed_evolving_agent.py "阅读 README.md，总结当前 PoC �
 ```python
 {
     "ok": True,
-    "model": "<your-ark-endpoint-id>",
+    "model": "<your-seed-evolving-endpoint-id>",
     "raw": {...}
 }
 ```

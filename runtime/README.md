@@ -10,7 +10,7 @@ This PoC treats the vendored Claude Code binary as the runtime and connects it d
 
 ## Model
 
-- Default Ark endpoint: `<your-ark-endpoint-id>`
+- Default Ark endpoint: `<your-seed-evolving-endpoint-id>`
 - Source: `/Users/bytedance/WorkSpace/LLM_env.md`
 - Secret handling: read `ARK_API_KEY` or `VOLCENGINE_API_KEY` from the shell environment.
 

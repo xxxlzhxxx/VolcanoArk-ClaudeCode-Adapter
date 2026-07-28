@@ -9,7 +9,7 @@ The repository validates Claude Code integration with Volcengine Ark Seed Evolvi
 ```text
 Claude Code
   -> https://ark.cn-beijing.volces.com/api/compatible/v1/messages
-  -> Ark endpoint <your-ark-endpoint-id>
+  -> Ark endpoint <your-seed-evolving-endpoint-id>
 ```
 
 Use this guide before running commands, editing files, or asking the user for credentials.
@@ -39,7 +39,7 @@ Ask the user to provide or confirm:
 | Config | Required | Default | Notes |
 |---|---:|---|---|
 | `ARK_API_KEY` or `VOLCENGINE_API_KEY` | Yes | none | User should export it in shell. Never print or commit it. |
-| Ark endpoint id | Yes | `<your-ark-endpoint-id>` | Seed Evolving endpoint. |
+| Ark endpoint id | Yes | `<your-seed-evolving-endpoint-id>` | Seed Evolving endpoint. |
 | Usage mode | Yes | CLI/headless | Route to the correct section below. |
 | Cache monitoring | Optional | off | Use `stream-json --verbose` when requested. |
 | File modification permission | Optional | ask first | Required for coding tasks that edit files. |
@@ -70,7 +70,7 @@ export ANTHROPIC_BASE_URL="https://ark.cn-beijing.volces.com/api/compatible"
 export ANTHROPIC_API_KEY="${ARK_API_KEY:-$VOLCENGINE_API_KEY}"
 export ANTHROPIC_AUTH_TOKEN="$ANTHROPIC_API_KEY"
 
-export ANTHROPIC_MODEL="${ANTHROPIC_MODEL:-<your-ark-endpoint-id>}"
+export ANTHROPIC_MODEL="${ANTHROPIC_MODEL:-<your-seed-evolving-endpoint-id>}"
 export ANTHROPIC_SMALL_FAST_MODEL="$ANTHROPIC_MODEL"
 export ANTHROPIC_DEFAULT_HAIKU_MODEL="$ANTHROPIC_MODEL"
 export ANTHROPIC_DEFAULT_SONNET_MODEL="$ANTHROPIC_MODEL"
@@ -284,7 +284,7 @@ Expected:
 
 - Command exits successfully.
 - Output includes a successful result.
-- `modelUsage` includes `<your-ark-endpoint-id>`.
+- `modelUsage` includes `<your-seed-evolving-endpoint-id>`.
 - Usage may include cache fields such as `cacheReadInputTokens`.
 
 ## Safety Rules

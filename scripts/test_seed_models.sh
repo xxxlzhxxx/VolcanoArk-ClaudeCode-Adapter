@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-PRO_MODEL="${SEED_21_PRO_MODEL:-<your-ark-endpoint-id>}"
-EVOLVING_MODEL="${SEED_21_EVOLVING_MODEL:-<your-ark-endpoint-id>}"
+PRO_MODEL="${SEED_21_PRO_MODEL:-}"
+EVOLVING_MODEL="${SEED_21_EVOLVING_MODEL:-${ANTHROPIC_MODEL:-${ARK_MODEL:-}}}"
 ARK_MESSAGES_BASE_URL="${ANTHROPIC_BASE_URL:-https://ark.cn-beijing.volces.com/api/compatible}"
 
 if [[ -z "${ARK_API_KEY:-${VOLCENGINE_API_KEY:-}}" ]]; then
@@ -11,6 +11,11 @@ if [[ -z "${ARK_API_KEY:-${VOLCENGINE_API_KEY:-}}" ]]; then
 fi
 
 API_KEY="${ARK_API_KEY:-$VOLCENGINE_API_KEY}"
+
+if [[ -z "$PRO_MODEL" && -z "$EVOLVING_MODEL" ]]; then
+  echo "Missing SEED_21_PRO_MODEL, SEED_21_EVOLVING_MODEL, ANTHROPIC_MODEL, or ARK_MODEL." >&2
+  exit 1
+fi
 
 test_model() {
   local model="$1"
@@ -34,5 +39,10 @@ test_model() {
 JSON
 }
 
-test_model "$PRO_MODEL"
-test_model "$EVOLVING_MODEL"
+if [[ -n "$PRO_MODEL" ]]; then
+  test_model "$PRO_MODEL"
+fi
+
+if [[ -n "$EVOLVING_MODEL" ]]; then
+  test_model "$EVOLVING_MODEL"
+fi

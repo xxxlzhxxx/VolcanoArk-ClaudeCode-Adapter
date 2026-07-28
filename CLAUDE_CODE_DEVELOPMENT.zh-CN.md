@@ -14,7 +14,7 @@ git@github.com:xxxlzhxxx/VolcanoArk-ClaudeCode-Adapter.git
 - 常规二次开发不能修改 Claude Code 内部 agent loop，只能在 binary 外层做接入、封装、编排、产品化和工程化。
 - 本仓库不推荐本地协议转换代理，只推荐直连火山方舟 Anthropic Messages API 兼容入口。
 - 三个主要接入入口 `Interactive CLI`、`CLI/headless`、`Agent SDK-style` 都依赖同一个 Claude Code binary。
-- 火山方舟模型以 endpoint id 形式传给 Claude Code，例如 Seed Evolving 默认是 `<your-ark-endpoint-id>`。
+- 火山方舟模型以 endpoint id 形式传给 Claude Code，例如 Seed Evolving 默认是 `<your-seed-evolving-endpoint-id>`。
 
 ## 2. Claude Code 二次开发的几种形式
 
@@ -49,7 +49,7 @@ All Claude Code paths above
   -> Claude Code binary
   -> Anthropic Messages API contract
   -> https://ark.cn-beijing.volces.com/api/compatible/v1/messages
-  -> Ark endpoint <your-ark-endpoint-id>
+  -> Ark endpoint <your-seed-evolving-endpoint-id>
   -> Seed Evolving model
 ```
 
@@ -81,7 +81,7 @@ export ANTHROPIC_BASE_URL="https://ark.cn-beijing.volces.com/api/compatible"
 export ANTHROPIC_API_KEY="$ARK_API_KEY"
 export ANTHROPIC_AUTH_TOKEN="$ANTHROPIC_API_KEY"
 
-export ANTHROPIC_MODEL="<your-ark-endpoint-id>"
+export ANTHROPIC_MODEL="<your-seed-evolving-endpoint-id>"
 export ANTHROPIC_SMALL_FAST_MODEL="$ANTHROPIC_MODEL"
 export ANTHROPIC_DEFAULT_HAIKU_MODEL="$ANTHROPIC_MODEL"
 export ANTHROPIC_DEFAULT_SONNET_MODEL="$ANTHROPIC_MODEL"

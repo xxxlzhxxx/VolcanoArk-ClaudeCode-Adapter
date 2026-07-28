@@ -7,7 +7,7 @@
 ```text
 Claude Code
   -> https://ark.cn-beijing.volces.com/api/compatible/v1/messages
-  -> 方舟 Endpoint <your-ark-endpoint-id>
+  -> 方舟 Endpoint <your-seed-evolving-endpoint-id>
 ```
 
 统一使用直连 Messages API，不再提供本地协议转换路径作为推荐方案。
@@ -38,7 +38,7 @@ Claude Code
 | 配置 | 是否必需 | 默认值 | 说明 |
 |---|---:|---|---|
 | `ARK_API_KEY` 或 `VOLCENGINE_API_KEY` | 是 | 无 | 用户应在 shell 中导出。不要打印、记录或提交。 |
-| 方舟 Endpoint ID | 是 | `<your-ark-endpoint-id>` | Seed Evolving endpoint。 |
+| 方舟 Endpoint ID | 是 | `<your-seed-evolving-endpoint-id>` | Seed Evolving endpoint。 |
 | 使用方式 | 是 | CLI/headless | 根据用户选择路由到后续章节。 |
 | 是否监控缓存命中率 | 可选 | 否 | 需要时使用 `stream-json --verbose`。 |
 | 是否允许修改文件 | 可选 | 先询问 | 涉及代码修改前必须确认。 |
@@ -69,7 +69,7 @@ export ANTHROPIC_BASE_URL="https://ark.cn-beijing.volces.com/api/compatible"
 export ANTHROPIC_API_KEY="${ARK_API_KEY:-$VOLCENGINE_API_KEY}"
 export ANTHROPIC_AUTH_TOKEN="$ANTHROPIC_API_KEY"
 
-export ANTHROPIC_MODEL="${ANTHROPIC_MODEL:-<your-ark-endpoint-id>}"
+export ANTHROPIC_MODEL="${ANTHROPIC_MODEL:-<your-seed-evolving-endpoint-id>}"
 export ANTHROPIC_SMALL_FAST_MODEL="$ANTHROPIC_MODEL"
 export ANTHROPIC_DEFAULT_HAIKU_MODEL="$ANTHROPIC_MODEL"
 export ANTHROPIC_DEFAULT_SONNET_MODEL="$ANTHROPIC_MODEL"
@@ -281,7 +281,7 @@ bash runtime/run_seed_evolving_messages_api.sh "只输出 OK"
 
 - 命令成功退出。
 - 输出包含成功结果。
-- `modelUsage` 包含 `<your-ark-endpoint-id>`。
+- `modelUsage` 包含 `<your-seed-evolving-endpoint-id>`。
 - usage 可能包含 `cacheReadInputTokens` 等缓存字段。
 
 ## 安全规则
