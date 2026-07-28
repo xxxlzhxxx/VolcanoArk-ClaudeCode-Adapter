@@ -35,7 +35,7 @@ curl -sS http://127.0.0.1:8021/run \
 
 - A product surface can call Claude Code through an internal service boundary.
 - The product shell can own request validation, auth, queueing, logging, and usage metrics later.
-- Model routing remains centralized through the Ark proxy.
+- Model routing remains centralized through Claude Code's `ANTHROPIC_*` environment variables and Ark's Messages API compatibility endpoint.
 
 ## Security Notes
 

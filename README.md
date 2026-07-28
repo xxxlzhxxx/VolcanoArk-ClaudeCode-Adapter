@@ -1,15 +1,15 @@
 # Claude Code on Volcengine Ark
 
-This directory vendors Claude Code and runs it through a local Anthropic Messages API proxy backed by Volcengine Ark chat completions.
+This directory validates Claude Code on Volcengine Ark through Ark's Anthropic Messages API compatibility endpoint.
+
+For a Chinese architecture guide covering Claude Code secondary development forms, binary layering, integration entry points, and GitHub usage, see `CLAUDE_CODE_DEVELOPMENT.zh-CN.md`.
 
 ## What Is Included
 
 - `vendor/package`: `@anthropic-ai/claude-code@2.1.216` wrapper package from npm.
 - `vendor/native/darwin-arm64/package/claude`: native Claude Code binary for macOS arm64.
-- `proxy/anthropic_ark_proxy.py`: local `/v1/messages` proxy that maps Anthropic Messages API requests to Ark `/chat/completions`.
-- `scripts/run_with_ark.sh`: starts the proxy and then launches Claude Code with `ANTHROPIC_BASE_URL` pointed at the proxy.
-- `scripts/test_seed_models.sh`: smoke-tests Seed 2.1 Pro and Seed 2.1 Evolving through the same Messages API compatibility layer.
-- `runtime/`: validates Claude Code headless mode as the Seed Evolving runtime, including direct Ark Messages API access.
+- `scripts/test_seed_models.sh`: smoke-tests Seed 2.1 Pro and Seed 2.1 Evolving through Ark's Anthropic Messages API compatibility endpoint.
+- `runtime/`: validates Claude Code interactive and headless modes through direct Ark Messages API access.
 - `agent-sdk/`: wraps Claude Code headless execution as a programmable Agent SDK-style interface.
 - `product-shell/`: exposes a local HTTP product shell that delegates work to the Agent SDK PoC.
 - `context-api/`: calls Ark Context API directly to validate Seed Evolving context cache support.
@@ -23,23 +23,19 @@ This directory vendors Claude Code and runs it through a local Anthropic Message
 
 Claude Code itself requires Node `>=22` when installed through npm. The current environment did not have `node`/`npm`, so the wrapper tarball and macOS arm64 native package were downloaded directly from npm registry and extracted under `vendor`.
 
-## Run Claude Code With Ark
+For binary setup details, see `INSTALL_CLAUDE_CODE.zh-CN.md`.
+
+## Run Interactive Claude Code With Ark Messages API
 
 ```bash
 cd /Users/bytedance/WorkSpace/ModelPlayground/agent/claude-code
 export ARK_API_KEY="..."
-export ARK_MODEL="<your-ark-endpoint-id>"
-bash scripts/run_with_ark.sh
+bash runtime/run_interactive_messages_api.sh
 ```
 
-The launcher exports:
+The script exports `ANTHROPIC_BASE_URL`, `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL`, and related Claude Code model variables before launching the native Claude Code binary.
 
-- `ANTHROPIC_BASE_URL=http://127.0.0.1:8011`
-- `ANTHROPIC_MODEL=$ARK_MODEL`
-- `ANTHROPIC_SMALL_FAST_MODEL=$ARK_MODEL`
-- `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1`
-
-By default the proxy overrides Claude Code's requested Claude model with `ARK_MODEL`. Set `ARK_PASSTHROUGH_MODEL=1` only if the request body already contains a valid Ark model or endpoint id.
+Claude Code appends `/v1/messages` to `ANTHROPIC_BASE_URL`, so do not include that path in the base URL.
 
 ## Test Seed 2.1 Pro And Evolving
 
@@ -58,9 +54,17 @@ Defaults:
 
 ## Seed Evolving PoC Directories
 
-### 1. Runtime
+### 1. Interactive CLI
 
-Direct Ark Messages API path:
+```bash
+cd /Users/bytedance/WorkSpace/ModelPlayground/agent/claude-code
+export ARK_API_KEY="..."
+bash runtime/run_interactive_messages_api.sh
+```
+
+Use this path when a human wants to operate Claude Code in the terminal.
+
+### 2. CLI / Headless
 
 ```bash
 cd /Users/bytedance/WorkSpace/ModelPlayground/agent/claude-code
@@ -68,17 +72,9 @@ export ARK_API_KEY="..."
 bash runtime/run_seed_evolving_messages_api.sh "用一句话说明你是什么模型，并输出 OK。"
 ```
 
-Legacy local proxy path:
+Use this path when you want Claude Code itself to be the runtime but need scriptable JSON output.
 
-```bash
-cd /Users/bytedance/WorkSpace/ModelPlayground/agent/claude-code
-export ARK_API_KEY="..."
-bash runtime/run_seed_evolving_headless.sh "用一句话说明你是什么模型，并输出 OK。"
-```
-
-Use the direct Ark Messages API path first when the target endpoint supports Anthropic Messages API. Keep the local proxy path only for compatibility experiments or request/response mapping debugging.
-
-### 2. Agent SDK
+### 3. Agent SDK-Style
 
 ```bash
 cd /Users/bytedance/WorkSpace/ModelPlayground/agent/claude-code
@@ -88,7 +84,7 @@ python3 agent-sdk/seed_evolving_agent.py "阅读 README.md，总结当前 PoC �
 
 Use this path when you want another Python process to own orchestration, retries, queueing, and result parsing.
 
-### 3. Product Shell
+### 4. Product Shell
 
 ```bash
 cd /Users/bytedance/WorkSpace/ModelPlayground/agent/claude-code
@@ -107,7 +103,7 @@ curl -sS http://127.0.0.1:8021/run \
 
 Use this path when you want a Web/backend/product surface in front of Claude Code.
 
-### 4. Context API
+### 5. Context API
 
 ```bash
 cd /Users/bytedance/WorkSpace/ModelPlayground/agent/claude-code
@@ -132,25 +128,19 @@ bash scripts/test_seed_models.sh
 
 ```bash
 cd /Users/bytedance/WorkSpace/ModelPlayground/agent/claude-code
-python3 -m unittest discover -s tests -p 'test_*.py'
+python3 -m py_compile agent-sdk/seed_evolving_agent.py product-shell/server.py context-api/context_api_client.py
 ```
 
-The unit tests validate request/response conversion without calling Ark.
+The compile check validates local Python entry points without calling Ark.
 
-## API Mapping
+## API Path
 
-The proxy supports these Anthropic Messages API features:
+The repository only recommends the Anthropic Messages API compatibility path:
 
-- `system` to OpenAI-compatible `system` message.
-- `messages[].content` text blocks to chat message text.
-- `tool_use` blocks to OpenAI-compatible `tool_calls`.
-- `tool_result` blocks to OpenAI-compatible `tool` messages.
-- `tools[].input_schema` to OpenAI-compatible function `parameters`.
-- non-streaming Ark responses back to Anthropic `message` responses.
-- streaming text chunks back to Anthropic SSE events.
+```text
+Claude Code
+  -> https://ark.cn-beijing.volces.com/api/compatible/v1/messages
+  -> Ark endpoint <your-ark-endpoint-id>
+```
 
-Current limitations:
-
-- Image blocks are not forwarded.
-- Streaming tool-call deltas are not fully reconstructed; non-streaming tool calls are supported.
-- Token usage in streaming responses is emitted as `0` unless Ark includes usage in a compatible stream chunk.
+All Claude Code runtime traffic should use this Messages API path.

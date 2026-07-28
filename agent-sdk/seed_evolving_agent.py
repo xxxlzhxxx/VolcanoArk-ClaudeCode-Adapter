@@ -12,7 +12,8 @@ from typing import Any
 
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
-CLAUDE_RUNNER = ROOT_DIR / "scripts" / "run_with_ark.sh"
+CLAUDE_BIN = ROOT_DIR / "vendor" / "native" / "darwin-arm64" / "package" / "claude"
+ARK_MESSAGES_BASE_URL = "https://ark.cn-beijing.volces.com/api/compatible"
 SEED_EVOLVING_MODEL = "<your-ark-endpoint-id>"
 
 
@@ -25,21 +26,40 @@ class SeedEvolvingAgent:
 
     def run(self, prompt: str, timeout_seconds: int = 900) -> dict[str, Any]:
         env = os.environ.copy()
-        env["ARK_MODEL"] = self.model
-        env["ANTHROPIC_MODEL"] = self.model
-        env["ANTHROPIC_SMALL_FAST_MODEL"] = self.model
-        env.setdefault("CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC", "1")
-
-        if not (env.get("ARK_API_KEY") or env.get("VOLCENGINE_API_KEY")):
+        api_key = env.get("ARK_API_KEY") or env.get("VOLCENGINE_API_KEY")
+        if not api_key:
             return {
                 "ok": False,
                 "model": self.model,
                 "error": "Missing ARK_API_KEY or VOLCENGINE_API_KEY.",
             }
 
+        claude_bin = Path(env.get("CLAUDE_BIN", CLAUDE_BIN))
+        if not claude_bin.exists():
+            return {
+                "ok": False,
+                "model": self.model,
+                "error": f"Claude binary does not exist: {claude_bin}",
+            }
+        if not os.access(claude_bin, os.X_OK):
+            return {
+                "ok": False,
+                "model": self.model,
+                "error": f"Claude binary is not executable: {claude_bin}",
+            }
+
+        env.setdefault("ANTHROPIC_BASE_URL", ARK_MESSAGES_BASE_URL)
+        env.setdefault("ANTHROPIC_API_KEY", api_key)
+        env.setdefault("ANTHROPIC_AUTH_TOKEN", env["ANTHROPIC_API_KEY"])
+        env["ANTHROPIC_MODEL"] = self.model
+        env["ANTHROPIC_SMALL_FAST_MODEL"] = self.model
+        env["ANTHROPIC_DEFAULT_HAIKU_MODEL"] = self.model
+        env["ANTHROPIC_DEFAULT_SONNET_MODEL"] = self.model
+        env["ANTHROPIC_DEFAULT_OPUS_MODEL"] = self.model
+        env.setdefault("CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC", "1")
+
         cmd = [
-            "bash",
-            str(CLAUDE_RUNNER),
+            str(claude_bin),
             "-p",
             prompt,
             "--output-format",

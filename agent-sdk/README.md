@@ -1,6 +1,6 @@
 # Agent SDK PoC: Programmable Seed Evolving Agent
 
-This PoC wraps Claude Code headless execution as a programmable agent interface. It uses the CLI surface of Claude Code's Agent SDK style flow and keeps all model traffic routed through the local Ark proxy.
+This PoC wraps Claude Code headless execution as a programmable agent interface. It uses the CLI surface of Claude Code's Agent SDK style flow and routes model traffic directly through Ark's Anthropic Messages API compatibility endpoint.
 
 ## Goal
 
@@ -39,4 +39,4 @@ If Claude Code exits with an error, it returns `ok=False` with stderr and exit c
 
 - The agent can be embedded in another Python process.
 - The caller can own orchestration, retries, queueing, and result parsing.
-- The model routing stays centralized in `../proxy/anthropic_ark_proxy.py`.
+- The model routing stays centralized in Claude Code's `ANTHROPIC_*` environment variables.

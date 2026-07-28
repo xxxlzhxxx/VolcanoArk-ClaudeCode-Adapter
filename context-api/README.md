@@ -1,12 +1,12 @@
 # Context API PoC: Seed Evolving Context Cache
 
-This PoC calls Volcengine Ark Context API directly, instead of going through the Anthropic Messages compatibility proxy.
+This PoC calls Volcengine Ark Context API directly. It is separate from the recommended Claude Code runtime path, which uses Ark's Anthropic Messages API compatibility endpoint.
 
 ## Goal
 
 - Validate whether Seed Evolving supports Ark Context API.
 - Test `session` cache and `common_prefix` cache independently from Claude Code.
-- Decide later whether the cache should be integrated into the product shell or proxy.
+- Decide later whether the cache should be integrated into product shell non-tool subflows.
 
 ## Model
 
@@ -51,5 +51,5 @@ python3 context-api/context_api_client.py \
 ## Integration Guidance
 
 - Use Context API for long-lived product, repo, or role context that is repeated across requests.
-- Keep Claude Code runtime and tool-use traffic on normal chat/proxy until Ark Context Chat supports the needed tool fields.
+- Keep Claude Code runtime and tool-use traffic on Ark's Anthropic Messages API compatibility endpoint.
 - Product shell can create a context once per task/session, store `context_id`, and pass only the latest user turn to Context Chat for non-tool subflows.

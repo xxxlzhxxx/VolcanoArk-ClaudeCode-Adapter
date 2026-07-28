@@ -10,7 +10,7 @@ Claude Code
   -> 方舟 Endpoint <your-ark-endpoint-id>
 ```
 
-除非用户明确要做协议调试，否则优先使用直连 Messages API，不优先使用本地 proxy。
+统一使用直连 Messages API，不再提供本地协议转换路径作为推荐方案。
 
 ## 第一步：先问用户怎么用 Claude Code
 
@@ -24,8 +24,7 @@ Claude Code
 3. Agent SDK-style 可编程封装
 4. Product shell / HTTP 服务封装
 5. 方舟 Context API 缓存实验
-6. 本地 proxy / 协议调试
-7. 其他自定义流程
+6. 其他自定义流程
 ```
 
 如果用户不确定，推荐：
@@ -53,6 +52,14 @@ export ARK_API_KEY="your-ark-api-key"
 ```
 
 不要把真实 key 写入 `.env`、`.env.example`、README、日志或 commit。
+
+如果缺少 Claude Code binary，请让用户执行：
+
+```bash
+bash scripts/install_claude_code.sh
+```
+
+安装细节见 `INSTALL_CLAUDE_CODE.zh-CN.md`。
 
 ## 通用环境变量
 
@@ -82,24 +89,15 @@ export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
 
 适用于用户想在 terminal 里手动使用 Claude Code。
 
-配置：
+使用项目脚本启动：
 
 ```bash
 cd /Users/bytedance/WorkSpace/ModelPlayground/agent/claude-code
 export ARK_API_KEY="..."
-
-export ANTHROPIC_BASE_URL="https://ark.cn-beijing.volces.com/api/compatible"
-export ANTHROPIC_API_KEY="$ARK_API_KEY"
-export ANTHROPIC_AUTH_TOKEN="$ANTHROPIC_API_KEY"
-export ANTHROPIC_MODEL="<your-ark-endpoint-id>"
-export ANTHROPIC_SMALL_FAST_MODEL="$ANTHROPIC_MODEL"
-export ANTHROPIC_DEFAULT_HAIKU_MODEL="$ANTHROPIC_MODEL"
-export ANTHROPIC_DEFAULT_SONNET_MODEL="$ANTHROPIC_MODEL"
-export ANTHROPIC_DEFAULT_OPUS_MODEL="$ANTHROPIC_MODEL"
-export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+bash runtime/run_interactive_messages_api.sh
 ```
 
-启动：
+如果已经按通用环境变量手工导出，也可以等价直接启动 binary：
 
 ```bash
 ./vendor/native/darwin-arm64/package/claude
@@ -290,36 +288,6 @@ python3 context-api/context_api_client.py \
 
 不要把 Context API 当作默认 Claude Code runtime。Context Chat 可能不支持完整 Claude Code tool loop。
 
-## 路由 6：本地 Proxy / 协议调试
-
-当直连 Ark Messages API 不可用，或用户要检查协议转换时使用。
-
-运行：
-
-```bash
-cd /Users/bytedance/WorkSpace/ModelPlayground/agent/claude-code
-export ARK_API_KEY="..."
-bash runtime/run_seed_evolving_headless.sh "用一句话说明你是什么模型，并输出 OK。"
-```
-
-链路：
-
-```text
-Claude Code
-  -> local /v1/messages proxy
-  -> Ark /chat/completions
-  -> Seed Evolving
-```
-
-适合：
-
-- request / response 映射调试
-- mock Anthropic Messages API
-- 协议兼容性测试
-- 自定义日志和未来路由实验
-
-普通 Claude Code runtime 不要优先走这条路。直连 Messages API 更能保留 Anthropic 原生语义。
-
 ## 验证清单
 
 单测：
@@ -350,19 +318,17 @@ bash runtime/run_seed_evolving_messages_api.sh "只输出 OK"
 - 优先使用项目内脚本和环境变量。
 - 文件编辑、commit、push、可能暴露密钥的命令都要先询问用户。
 - 普通 Claude Code 使用默认走直连 Ark Messages API。
-- 本地 proxy 仅用于兼容性或调试任务。
+- 不要新增或使用 Messages-to-Chat-Completions 转换层，除非用户明确开启新的实验。
 
 ## 仓库路径
 
 | 路径 | 用途 |
 |---|---|
+| `runtime/run_interactive_messages_api.sh` | 直连 Ark Messages API 的交互式 CLI |
 | `runtime/run_seed_evolving_messages_api.sh` | 直连 Ark Messages API runtime |
-| `runtime/run_seed_evolving_headless.sh` | legacy 本地 proxy runtime |
 | `agent-sdk/seed_evolving_agent.py` | Python SDK-style wrapper |
 | `product-shell/server.py` | HTTP product shell |
 | `context-api/context_api_client.py` | Ark Context API client |
-| `proxy/anthropic_ark_proxy.py` | Anthropic Messages 到 Ark Chat Completions 的转换 proxy |
-| `tests/test_anthropic_ark_proxy.py` | Proxy 转换单测 |
 | `.env.example` | 安全环境变量占位示例 |
 
 ## 什么时候再次询问用户

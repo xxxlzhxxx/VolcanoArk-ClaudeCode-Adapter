@@ -26,8 +26,7 @@ How do you want to use Claude Code in this task?
 3. Agent SDK-style programmable wrapper
 4. Product shell / HTTP service
 5. Ark Context API cache experiment
-6. Local proxy / protocol debugging
-7. Other custom workflow
+6. Other custom workflow
 ```
 
 If the user does not know, recommend option 2 for automation tests and option 1 for manual coding sessions.
@@ -54,6 +53,14 @@ export ARK_API_KEY="your-ark-api-key"
 ```
 
 Never echo, log, write, or commit the actual key.
+
+If the Claude Code binary is missing, ask the user to install it with:
+
+```bash
+bash scripts/install_claude_code.sh
+```
+
+For details, read `INSTALL_CLAUDE_CODE.zh-CN.md`.
 
 ## Shared Environment Setup
 
@@ -83,24 +90,15 @@ Important:
 
 Use this route when the user wants to operate Claude Code manually in a terminal.
 
-Setup:
+Run with the project script:
 
 ```bash
 cd /Users/bytedance/WorkSpace/ModelPlayground/agent/claude-code
 export ARK_API_KEY="..."
-
-export ANTHROPIC_BASE_URL="https://ark.cn-beijing.volces.com/api/compatible"
-export ANTHROPIC_API_KEY="$ARK_API_KEY"
-export ANTHROPIC_AUTH_TOKEN="$ANTHROPIC_API_KEY"
-export ANTHROPIC_MODEL="<your-ark-endpoint-id>"
-export ANTHROPIC_SMALL_FAST_MODEL="$ANTHROPIC_MODEL"
-export ANTHROPIC_DEFAULT_HAIKU_MODEL="$ANTHROPIC_MODEL"
-export ANTHROPIC_DEFAULT_SONNET_MODEL="$ANTHROPIC_MODEL"
-export ANTHROPIC_DEFAULT_OPUS_MODEL="$ANTHROPIC_MODEL"
-export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+bash runtime/run_interactive_messages_api.sh
 ```
 
-Run:
+Equivalent direct binary launch after the shared environment is already exported:
 
 ```bash
 ./vendor/native/darwin-arm64/package/claude
@@ -291,36 +289,6 @@ Use this for:
 
 Do not use this as the default Claude Code runtime path. Context Chat may not support full Claude Code tool loops.
 
-## Route 6: Local Proxy / Protocol Debugging
-
-Use this route when direct Ark Messages API is unavailable, or when the user wants to inspect protocol conversion.
-
-Run:
-
-```bash
-cd /Users/bytedance/WorkSpace/ModelPlayground/agent/claude-code
-export ARK_API_KEY="..."
-bash runtime/run_seed_evolving_headless.sh "用一句话说明你是什么模型，并输出 OK。"
-```
-
-Flow:
-
-```text
-Claude Code
-  -> local /v1/messages proxy
-  -> Ark /chat/completions
-  -> Seed Evolving
-```
-
-Use this for:
-
-- Request/response mapping debugging.
-- Mocking Anthropic Messages API.
-- Protocol compatibility tests.
-- Custom logging and future routing experiments.
-
-Do not prefer this route for normal Claude Code runtime. Direct Messages API preserves Anthropic-native semantics better.
-
 ## Validation Checklist
 
 Before reporting success, run the relevant checks.
@@ -353,19 +321,17 @@ Expected:
 - Prefer project-local scripts and environment variables.
 - Ask before file edits, commits, remote pushes, or commands that may expose secrets.
 - Prefer direct Ark Messages API for normal Claude Code usage.
-- Use local proxy only for compatibility or debugging tasks.
+- Do not add or use a Messages-to-Chat-Completions conversion layer unless the user explicitly starts a new experiment for it.
 
 ## Repository Map
 
 | Path | Purpose |
 |---|---|
+| `runtime/run_interactive_messages_api.sh` | Direct Ark Messages API interactive CLI path |
 | `runtime/run_seed_evolving_messages_api.sh` | Direct Ark Messages API runtime path |
-| `runtime/run_seed_evolving_headless.sh` | Legacy local proxy runtime path |
 | `agent-sdk/seed_evolving_agent.py` | Python SDK-style wrapper |
 | `product-shell/server.py` | HTTP product shell |
 | `context-api/context_api_client.py` | Ark Context API client |
-| `proxy/anthropic_ark_proxy.py` | Anthropic Messages to Ark Chat Completions proxy |
-| `tests/test_anthropic_ark_proxy.py` | Proxy conversion unit tests |
 | `.env.example` | Safe environment variable placeholders |
 
 ## When To Ask The User Again

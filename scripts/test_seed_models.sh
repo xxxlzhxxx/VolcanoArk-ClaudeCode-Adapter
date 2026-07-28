@@ -1,37 +1,24 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-HOST="${CLAUDE_ARK_HOST:-127.0.0.1}"
-PORT="${CLAUDE_ARK_PORT:-8011}"
 PRO_MODEL="${SEED_21_PRO_MODEL:-<your-ark-endpoint-id>}"
 EVOLVING_MODEL="${SEED_21_EVOLVING_MODEL:-<your-ark-endpoint-id>}"
+ARK_MESSAGES_BASE_URL="${ANTHROPIC_BASE_URL:-https://ark.cn-beijing.volces.com/api/compatible}"
 
 if [[ -z "${ARK_API_KEY:-${VOLCENGINE_API_KEY:-}}" ]]; then
   echo "Missing ARK_API_KEY or VOLCENGINE_API_KEY." >&2
   exit 1
 fi
 
-export ARK_PASSTHROUGH_MODEL=1
-
-python3 "$ROOT_DIR/proxy/anthropic_ark_proxy.py" --host "$HOST" --port "$PORT" &
-PROXY_PID=$!
-trap 'kill "$PROXY_PID" >/dev/null 2>&1 || true' EXIT
-
-for _ in $(seq 1 50); do
-  if curl -fsS "http://$HOST:$PORT/health" >/dev/null 2>&1; then
-    break
-  fi
-  sleep 0.1
-done
+API_KEY="${ARK_API_KEY:-$VOLCENGINE_API_KEY}"
 
 test_model() {
   local model="$1"
   echo "==> Testing $model"
-  curl -fsS "http://$HOST:$PORT/v1/messages" \
+  curl -fsS "$ARK_MESSAGES_BASE_URL/v1/messages" \
     -H 'content-type: application/json' \
     -H 'anthropic-version: 2023-06-01' \
-    -H 'x-api-key: <redacted-api-key>' \
+    -H "x-api-key: $API_KEY" \
     --data-binary @- <<JSON | python3 -m json.tool
 {
   "model": "$model",
