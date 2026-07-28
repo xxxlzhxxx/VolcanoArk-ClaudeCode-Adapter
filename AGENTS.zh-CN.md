@@ -23,8 +23,7 @@ Claude Code
 2. CLI / headless 自动化使用
 3. Agent SDK-style 可编程封装
 4. Product shell / HTTP 服务封装
-5. 方舟 Context API 缓存实验
-6. 其他自定义流程
+5. 其他自定义流程
 ```
 
 如果用户不确定，推荐：
@@ -264,30 +263,6 @@ curl -sS http://127.0.0.1:8021/run \
 - 内部服务封装
 - 后续接认证、审计、限额和任务队列
 
-## 路由 5：方舟 Context API 缓存实验
-
-仅当用户明确要测试方舟原生 Context API 时使用。
-
-运行：
-
-```bash
-cd /Users/bytedance/WorkSpace/ModelPlayground/agent/claude-code
-export ARK_API_KEY="..."
-python3 context-api/context_api_client.py \
-  --mode session \
-  --system "你是一个极简助手。回答必须包含 SEED_EVOLVING_CONTEXT_OK。" \
-  --prompt "用一句话说明你是否读取了缓存中的系统指令。"
-```
-
-适合：
-
-- 长 system prompt
-- 仓库摘要
-- 产品背景缓存
-- 不需要工具调用的子流程
-
-不要把 Context API 当作默认 Claude Code runtime。Context Chat 可能不支持完整 Claude Code tool loop。
-
 ## 验证清单
 
 单测：
@@ -318,7 +293,7 @@ bash runtime/run_seed_evolving_messages_api.sh "只输出 OK"
 - 优先使用项目内脚本和环境变量。
 - 文件编辑、commit、push、可能暴露密钥的命令都要先询问用户。
 - 普通 Claude Code 使用默认走直连 Ark Messages API。
-- 不要新增或使用 Messages-to-Chat-Completions 转换层，除非用户明确开启新的实验。
+- 不要新增其他协议路径；普通 Claude Code 使用统一保持 Ark Anthropic Messages API only。
 
 ## 仓库路径
 
@@ -328,7 +303,6 @@ bash runtime/run_seed_evolving_messages_api.sh "只输出 OK"
 | `runtime/run_seed_evolving_messages_api.sh` | 直连 Ark Messages API runtime |
 | `agent-sdk/seed_evolving_agent.py` | Python SDK-style wrapper |
 | `product-shell/server.py` | HTTP product shell |
-| `context-api/context_api_client.py` | Ark Context API client |
 | `.env.example` | 安全环境变量占位示例 |
 
 ## 什么时候再次询问用户

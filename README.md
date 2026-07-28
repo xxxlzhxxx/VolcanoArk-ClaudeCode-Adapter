@@ -12,7 +12,6 @@ For a Chinese architecture guide covering Claude Code secondary development form
 - `runtime/`: validates Claude Code interactive and headless modes through direct Ark Messages API access.
 - `agent-sdk/`: wraps Claude Code headless execution as a programmable Agent SDK-style interface.
 - `product-shell/`: exposes a local HTTP product shell that delegates work to the Agent SDK PoC.
-- `context-api/`: calls Ark Context API directly to validate Seed Evolving context cache support.
 
 ## Requirements
 
@@ -103,19 +102,6 @@ curl -sS http://127.0.0.1:8021/run \
 
 Use this path when you want a Web/backend/product surface in front of Claude Code.
 
-### 5. Context API
-
-```bash
-cd /Users/bytedance/WorkSpace/ModelPlayground/agent/claude-code
-export ARK_API_KEY="..."
-python3 context-api/context_api_client.py \
-  --mode session \
-  --system "你是一个极简助手。回答必须包含 SEED_EVOLVING_CONTEXT_OK。" \
-  --prompt "用一句话说明你是否读取了缓存中的系统指令。"
-```
-
-Use this path when you want to test Ark native context cache independently from Claude Code. Context Chat currently does not support `tools`, so it is best for long system prompts, repository summaries, product context, or non-tool subflows.
-
 If your Ark account uses different endpoint IDs or public model names, override the variables:
 
 ```bash
@@ -128,7 +114,7 @@ bash scripts/test_seed_models.sh
 
 ```bash
 cd /Users/bytedance/WorkSpace/ModelPlayground/agent/claude-code
-python3 -m py_compile agent-sdk/seed_evolving_agent.py product-shell/server.py context-api/context_api_client.py
+python3 -m py_compile agent-sdk/seed_evolving_agent.py product-shell/server.py
 ```
 
 The compile check validates local Python entry points without calling Ark.

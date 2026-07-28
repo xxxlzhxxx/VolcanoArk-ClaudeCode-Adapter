@@ -13,7 +13,6 @@ Claude Code binary 是 Anthropic 提供的闭源/专有可执行程序。本仓�
 - CLI/headless wrapper
 - Agent SDK-style wrapper
 - Product shell
-- Context API 实验
 - 中英文 Agent 指南
 
 因此 clone 仓库后，需要先在本地安装或准备 Claude Code binary。

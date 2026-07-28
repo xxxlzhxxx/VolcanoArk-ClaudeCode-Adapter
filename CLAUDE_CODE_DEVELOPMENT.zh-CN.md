@@ -26,7 +26,6 @@ git@github.com:xxxlzhxxx/VolcanoArk-ClaudeCode-Adapter.git
 | Agent SDK-style wrapper | 否 | 用 Python 把 Claude Code headless 包装成可编程接口 | `agent-sdk/seed_evolving_agent.py` |
 | Product shell | 否 | 在 Claude Code 前面套 HTTP/API/产品后端 | `product-shell/server.py` |
 | Skills / MCP / Hooks | 否 | 扩展工具、上下文注入、外部系统集成、流程钩子 | 可在现有入口基础上继续扩展 |
-| Ark Context API 实验 | 不经过 Claude Code runtime | 验证方舟原生上下文缓存，不等价于 Claude Code tool loop | `context-api/context_api_client.py` |
 
 ## 3. 层级关系
 
@@ -211,7 +210,7 @@ Python caller
   -> Ark Messages API
 ```
 
-## 7. Product Shell 与 Context API
+## 7. Product Shell
 
 Product shell 是在 Agent SDK-style 之上再封一层 HTTP 服务：
 
@@ -229,17 +228,7 @@ curl -sS http://127.0.0.1:8021/run \
   | python3 -m json.tool
 ```
 
-Context API 是独立实验，主要验证方舟原生上下文缓存：
-
-```bash
-export ARK_API_KEY="your-ark-api-key"
-python3 context-api/context_api_client.py \
-  --mode session \
-  --system "你是一个极简助手。回答必须包含 SEED_EVOLVING_CONTEXT_OK。" \
-  --prompt "用一句话说明你是否读取了缓存中的系统指令。"
-```
-
-Context API 不等价于 Claude Code runtime。它不应该替代 Claude Code 的 tool loop 和 coding agent 行为。
+Product shell 仍然复用 Claude Code binary，并通过 Ark Anthropic Messages API 兼容入口访问 Seed Evolving。它不是新的模型协议层，只是在 Messages API 接入路径外层增加 HTTP 服务边界。
 
 ## 8. 缓存命中率监控
 
@@ -275,7 +264,7 @@ cache_hit_rate =
 不调用外部模型的静态检查：
 
 ```bash
-python3 -m py_compile agent-sdk/seed_evolving_agent.py product-shell/server.py context-api/context_api_client.py
+python3 -m py_compile agent-sdk/seed_evolving_agent.py product-shell/server.py
 bash -n runtime/run_seed_evolving_messages_api.sh runtime/run_interactive_messages_api.sh scripts/install_claude_code.sh scripts/test_seed_models.sh
 ```
 
@@ -291,5 +280,5 @@ bash runtime/run_seed_evolving_messages_api.sh "只输出 OK"
 - 不提交 `vendor/`、`.env`、真实 API key、运行日志和本地缓存。
 - 不在聊天、终端总结、README 或 commit message 中暴露真实 API key。
 - 不修改全局 Claude Code、Anthropic 或 shell 配置，除非用户明确要求。
-- 不新增本地 Messages-to-Chat-Completions 转换层，除非明确开启新的实验。
+- 不新增其他协议路径；普通 Claude Code 使用统一保持 Ark Anthropic Messages API only。
 - 对 Claude Code 二次开发主要发生在外层入口、工具、MCP、Skills、Hooks、产品 shell 和调度系统中，不发生在闭源 binary 内部。

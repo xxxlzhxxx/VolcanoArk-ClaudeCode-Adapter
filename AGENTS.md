@@ -25,8 +25,7 @@ How do you want to use Claude Code in this task?
 2. CLI/headless Claude Code
 3. Agent SDK-style programmable wrapper
 4. Product shell / HTTP service
-5. Ark Context API cache experiment
-6. Other custom workflow
+5. Other custom workflow
 ```
 
 If the user does not know, recommend option 2 for automation tests and option 1 for manual coding sessions.
@@ -265,30 +264,6 @@ Use this for:
 - Internal service wrappers.
 - Future auth, audit, quota, and task queue layers.
 
-## Route 5: Ark Context API Cache Experiment
-
-Use this route only when the user explicitly wants to test Ark native Context API.
-
-Run:
-
-```bash
-cd /Users/bytedance/WorkSpace/ModelPlayground/agent/claude-code
-export ARK_API_KEY="..."
-python3 context-api/context_api_client.py \
-  --mode session \
-  --system "你是一个极简助手。回答必须包含 SEED_EVOLVING_CONTEXT_OK。" \
-  --prompt "用一句话说明你是否读取了缓存中的系统指令。"
-```
-
-Use this for:
-
-- Long system prompts.
-- Repository summaries.
-- Product background caching.
-- Non-tool subflows.
-
-Do not use this as the default Claude Code runtime path. Context Chat may not support full Claude Code tool loops.
-
 ## Validation Checklist
 
 Before reporting success, run the relevant checks.
@@ -321,7 +296,7 @@ Expected:
 - Prefer project-local scripts and environment variables.
 - Ask before file edits, commits, remote pushes, or commands that may expose secrets.
 - Prefer direct Ark Messages API for normal Claude Code usage.
-- Do not add or use a Messages-to-Chat-Completions conversion layer unless the user explicitly starts a new experiment for it.
+- Do not add alternate protocol paths; keep normal Claude Code usage on Ark Anthropic Messages API only.
 
 ## Repository Map
 
@@ -331,7 +306,6 @@ Expected:
 | `runtime/run_seed_evolving_messages_api.sh` | Direct Ark Messages API runtime path |
 | `agent-sdk/seed_evolving_agent.py` | Python SDK-style wrapper |
 | `product-shell/server.py` | HTTP product shell |
-| `context-api/context_api_client.py` | Ark Context API client |
 | `.env.example` | Safe environment variable placeholders |
 
 ## When To Ask The User Again

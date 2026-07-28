@@ -5,13 +5,12 @@
   "description": "Run Claude Code against Volcengine Ark through the Anthropic Messages API compatibility endpoint.",
   "scripts": {
     "install:claude": "bash scripts/install_claude_code.sh",
-    "test": "python3 -m py_compile agent-sdk/seed_evolving_agent.py product-shell/server.py context-api/context_api_client.py",
+    "test": "python3 -m py_compile agent-sdk/seed_evolving_agent.py product-shell/server.py",
     "test:seed": "bash scripts/test_seed_models.sh",
     "poc:runtime": "bash runtime/run_seed_evolving_messages_api.sh",
     "poc:interactive": "bash runtime/run_interactive_messages_api.sh",
     "poc:agent-sdk": "python3 agent-sdk/seed_evolving_agent.py",
-    "poc:product-shell": "python3 product-shell/server.py",
-    "poc:context-api": "python3 context-api/context_api_client.py"
+    "poc:product-shell": "python3 product-shell/server.py"
   },
   "claudeCode": {
     "version": "2.1.216",
